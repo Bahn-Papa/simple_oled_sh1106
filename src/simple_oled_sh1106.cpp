@@ -294,17 +294,15 @@ void SimpleDisplayClass::Flip( bool bFlip )
 
 
 //**************************************************************************
-//	SetDisplayLineOffset
+//	SetPrintMode
 //--------------------------------------------------------------------------
 //	Die Funktion
 //
-void SimpleDisplayClass::SetDisplayLineOffset( uint8_t ui8Offset )
+void SimpleDisplayClass::SetPrintMode( uint8_t ui8Mode )
 {
-	if( (DISPLAY_LINE_OFFSET_MIN <= ui8Offset) && (DISPLAY_LINE_OFFSET_MAX >= ui8Offset) )
+	if( (PM_OVERWRITE_SAME_LINE <= ui8Mode) && (PM_SCROLL_LINE >= ui8Mode) )
 	{
-		g_ui8DisplayLineOffset = ui8Offset;
-
-		SendCommand( OPC_DISPLAY_LINE_OFFSET, ui8Offset );
+		m_ui8PrintMode = ui8Mode;
 	}
 }
 
@@ -434,4 +432,20 @@ void SimpleDisplayClass::NextLine( void )
 	}
 
 	SetCursor( m_ui8TextLine, m_ui8TextColumn, true );
+}
+
+
+//**************************************************************************
+//	SetDisplayLineOffset
+//--------------------------------------------------------------------------
+//	Die Funktion
+//
+void SimpleDisplayClass::SetDisplayLineOffset( uint8_t ui8Offset )
+{
+	if( (DISPLAY_LINE_OFFSET_MIN <= ui8Offset) && (DISPLAY_LINE_OFFSET_MAX >= ui8Offset) )
+	{
+		g_ui8DisplayLineOffset = ui8Offset;
+
+		SendCommand( OPC_DISPLAY_LINE_OFFSET, ui8Offset );
+	}
 }

@@ -62,6 +62,10 @@
 #define	MAX_TEXT_LINES				8
 #define MAX_TEXT_COLUMNS			16
 
+#define PM_OVERWRITE_SAME_LINE		1
+#define PM_OVERWRITE_NEXT_LINE		2
+#define PM_SCROLL_LINE				3
+
 
 //==========================================================================
 //
@@ -125,19 +129,21 @@ class SimpleDisplayClass
 			m_bInverse = bInverse;
 		}
 
-		void SetDisplayLineOffset( uint8_t ui8Offset );
+		void SetPrintMode( uint8_t ui8Mode );
 		void SetDisplayColumnOffset( uint8_t ui8Offset );
 
 
 	private:
 		uint8_t		m_ui8TextLine;
 		uint8_t		m_ui8TextColumn;
+		uint8_t		m_ui8PrintMode;
 		bool		m_bInverse;
 
 		void SetCursor( uint8_t ui8TextLine, uint8_t ui8TextColumn, bool bWithOffset );
 		void NextLine( void );
 		void SendCommand( uint8_t ui8OpCode, uint8_t ui8Parameter );
 		void SetOption( uint8_t ui8OpCode );
+		void SetDisplayLineOffset( uint8_t ui8Offset );
 };
 
 
