@@ -2,7 +2,7 @@
 
 This library can print just plain text on an OLED display (128 x 64 pixel) that is driven by a sh1106 chip.<br>
 
-If you want to print some data on the display than you have to build your output in a buffer first.<br>
+If you want to print some data (e.g.: numbers) on the display than you have to build your output in a buffer first.<br>
 Then deliver the buffer as parameter to the Print functions.<br>
 (see example 'PrintText')
 
@@ -44,4 +44,5 @@ Have a look into the examples and see how to use the functions.
 | Example | Description |
 | --- | --- |
 | PrintText | This example shows how the cursor is placed and<br>prints some text lines in normal and inverse mode. |
+| PrintMode | This example shows the different print modes.<br>The print modes are described at the top of the file 'PintMode.ino'. |
 | FlashFlipDisplay | Here you can see how to use SetInverse() to flash the display.<br>And you will see how to 'flip' the display (turn the output by 180 degree) |

@@ -29,3 +29,8 @@ SetDisplayColumnOffset	KEYWORD2
 #################################################
 gc_ui8MaxTextLines		LITERAL1
 gc_ui8MaxTextColumns	LITERAL1
+
+#################################################
+# Variables (LITERAL2)
+#################################################
+g_clDisplay		LITERAL2

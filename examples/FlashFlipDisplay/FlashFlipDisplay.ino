@@ -6,6 +6,8 @@
 //#	(e.g. to display an alarm)
 //# and it shows how to "flip" the display (turn text by 180 degree).
 //#
+//#-------------------------------------------------------------------------
+//#
 //#	Dieses Beispiel zeigt, wie das Display blinken kann
 //#	(z.B.: für die Ausgabe eines Alarms)
 //#	und wie die Ausgabe auf dem Display um 180 Grad gedreht wird (flip).
