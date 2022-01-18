@@ -68,14 +68,11 @@ class SimpleDisplayClass
 		void Clear( void );
 		void ClearLine( void );
 
-		inline void SetCursor( uint8_t ui8TextLine, uint8_t ui8TextColumn )
-		{
-			SetCursor( ui8TextLine, ui8TextColumn, true );
-		}
+		void SetCursor( uint8_t ui8TextLine, uint8_t ui8TextColumn );
 
 		inline void Home( void )
 		{
-			SetCursor( 0, 0, true );
+			SetCursor( 0, 0 );
 		};
 
 		void SetInverse( bool bInverse );
@@ -100,7 +97,6 @@ class SimpleDisplayClass
 		uint8_t		m_ui8LineOffset;
 		bool		m_bInverse;
 
-		void SetCursor( uint8_t ui8TextLine, uint8_t ui8TextColumn, bool bWithOffset );
 		void NextLine( bool bShiftLine );
 		void SendCommand( uint8_t ui8OpCode );
 		void SendCommand( uint8_t ui8OpCode, uint8_t ui8Parameter );

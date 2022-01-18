@@ -100,6 +100,11 @@
 #define	MASK_COLUMN_ADDRESS_LOW			0x0F
 #define MASK_COLUMN_ADDRESS_HIGH		0xF0
 
+//----	Idx into command buffer  ---------------------------------------
+#define	IDX_PAGE_ADDRESS				1
+#define IDX_COLUMN_ADDRESS_LOW			3
+#define IDX_COLUMN_ADDRESS_HIGH			5
+
 
 //==========================================================================
 //
@@ -110,6 +115,15 @@
 SimpleDisplayClass	g_clDisplay	= SimpleDisplayClass();
 
 uint8_t		g_ui8DisplayColumnOffset	= DISPLAY_COLUMN_OFFSET_DEFAULT;
+uint8_t		g_arui8PositionCommandBuffer[] =
+	{
+		PREFIX_NEXT_COMMAND,
+		OPC_PAGE_ADDRESS,
+		PREFIX_NEXT_COMMAND,
+		OPC_COLUMN_ADDRESS_LOW,
+		PREFIX_LAST_COMMAND,
+		OPC_COLUMN_ADDRESS_HIGH
+	};
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -183,14 +197,12 @@ uint8_t SimpleDisplayClass::MaxTextColumns( void )
 //	valid values are:
 //		line:	0 -  7
 //		column:	0 - 15
-//	The parameter 'bWithOffset' decides if the display column offset is
-//	taken into account or not (normaly yes).
 //
-void SimpleDisplayClass::SetCursor( uint8_t ui8TextLine, uint8_t ui8TextColumn, bool bWithOffset )
+void SimpleDisplayClass::SetCursor( uint8_t ui8TextLine, uint8_t ui8TextColumn )
 {
 	uint8_t		ui8AddressLow;
 	uint8_t		ui8AddressHigh;
-	
+
 
 	if( (TEXT_LINES > ui8TextLine) && (TEXT_COLUMNS > ui8TextColumn) )
 	{
@@ -215,45 +227,30 @@ void SimpleDisplayClass::SetCursor( uint8_t ui8TextLine, uint8_t ui8TextColumn, 
 		//	preparation for the command that will be send to the display
 		//
 		ui8TextLine &= MASK_PAGE_ADDRESS;
-		ui8TextLine |= OPC_PAGE_ADDRESS;
+		g_arui8PositionCommandBuffer[ IDX_PAGE_ADDRESS ] = ui8TextLine | OPC_PAGE_ADDRESS;
 
 		//------------------------------------------------------------------
 		//	calculate bit column
 		//	the calculated bit column is the start column of a character
 		//
 		ui8TextColumn <<= 3;		//	multiply by 8
-
-		//------------------------------------------------------------------
-		//	Normally the column offset is used.
-		//	Only for clearing a row the column offset is NOT used.
-		//
-		if( bWithOffset )
-		{
-			ui8TextColumn += g_ui8DisplayColumnOffset;
-		}
+		ui8TextColumn  += g_ui8DisplayColumnOffset;
 
 		//------------------------------------------------------------------
 		//	preparation for the commands that will be send to the display
 		//
 		ui8AddressLow	 = ui8TextColumn & MASK_COLUMN_ADDRESS_LOW;
-		ui8AddressLow	|= OPC_COLUMN_ADDRESS_LOW;
-	
+		g_arui8PositionCommandBuffer[ IDX_COLUMN_ADDRESS_LOW  ] = ui8AddressLow | OPC_COLUMN_ADDRESS_LOW;
+
 		ui8AddressHigh	 = ui8TextColumn & MASK_COLUMN_ADDRESS_HIGH;
 		ui8AddressHigh >>= 4;
-		ui8AddressHigh	|= OPC_COLUMN_ADDRESS_HIGH;
+		g_arui8PositionCommandBuffer[ IDX_COLUMN_ADDRESS_HIGH ] = ui8AddressHigh | OPC_COLUMN_ADDRESS_HIGH;
 
 		//------------------------------------------------------------------
 		//	now send the commands to position the cursor to the display
 		//
 		Wire.beginTransmission( DISPLAY_ADDRESS );
-
-		Wire.write( PREFIX_NEXT_COMMAND );
-		Wire.write( ui8TextLine );
-		Wire.write( PREFIX_NEXT_COMMAND );
-		Wire.write( ui8AddressLow );
-		Wire.write( PREFIX_LAST_COMMAND );
-		Wire.write( ui8AddressHigh );
-	
+		Wire.write( g_arui8PositionCommandBuffer, sizeof( g_arui8PositionCommandBuffer ) );
 		Wire.endTransmission();
 	}
 }
@@ -378,7 +375,7 @@ void SimpleDisplayClass::Clear( void )
 	//----------------------------------------------------------------------
 	//	set the cursor to home position
 	//
-	SetCursor( 0, 0, true );
+	SetCursor( 0, 0 );
 }
 
 
@@ -390,7 +387,32 @@ void SimpleDisplayClass::Clear( void )
 //
 void SimpleDisplayClass::ClearLine( void )
 {
-	SetCursor( m_ui8TextLine, 0, false );
+	uint8_t	ui8LineToClear	= m_ui8TextLine + m_ui8LineOffset;
+
+	//------------------------------------------------------------------
+	//	take care of the display line shift
+	//	and correct the line to clear accordingly
+	//
+	if( TEXT_LINES <= ui8LineToClear )
+	{
+		ui8LineToClear -= TEXT_LINES;
+	}
+
+	//------------------------------------------------------------------
+	//	preparation for the command that will be send to the display
+	//		set cursor to actual line first column
+	//
+	ui8LineToClear &= MASK_PAGE_ADDRESS;
+	g_arui8PositionCommandBuffer[ IDX_PAGE_ADDRESS ] = ui8LineToClear | OPC_PAGE_ADDRESS;
+	g_arui8PositionCommandBuffer[ IDX_COLUMN_ADDRESS_LOW  ] = OPC_COLUMN_ADDRESS_LOW;
+	g_arui8PositionCommandBuffer[ IDX_COLUMN_ADDRESS_HIGH ] = OPC_COLUMN_ADDRESS_HIGH;
+
+	//------------------------------------------------------------------
+	//	now send the commands to position the cursor to the display
+	//
+	Wire.beginTransmission( DISPLAY_ADDRESS );
+	Wire.write( g_arui8PositionCommandBuffer, sizeof( g_arui8PositionCommandBuffer ) );
+	Wire.endTransmission();
 
 	for( uint8_t idx1 = 0 ; idx1 < 6 ; idx1++ )
 	{
@@ -405,8 +427,17 @@ void SimpleDisplayClass::ClearLine( void )
 
 		Wire.endTransmission();
 	}
-	
-	SetCursor( m_ui8TextLine, 0, true );
+
+	//------------------------------------------------------------------
+	//	set cursor to first text position of actual line
+	//
+	m_ui8TextColumn = 0;
+	g_arui8PositionCommandBuffer[ IDX_COLUMN_ADDRESS_LOW  ] =	  OPC_COLUMN_ADDRESS_LOW
+																| g_ui8DisplayColumnOffset;
+
+	Wire.beginTransmission( DISPLAY_ADDRESS );
+	Wire.write( g_arui8PositionCommandBuffer, sizeof( g_arui8PositionCommandBuffer ) );
+	Wire.endTransmission();
 }
 
 
@@ -611,8 +642,8 @@ void SimpleDisplayClass::NextLine( bool bShiftLine )
 	//	now set the cursor to the new position and
 	//	if required clear the line
 	//
-	SetCursor( m_ui8TextLine, m_ui8TextColumn, true );
-	
+	SetCursor( m_ui8TextLine, m_ui8TextColumn );
+
 	if( PM_OVERWRITE_NEXT_LINE < m_ui8PrintMode )
 	{
 		ClearLine();
