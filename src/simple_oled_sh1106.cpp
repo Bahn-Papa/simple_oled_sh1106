@@ -32,6 +32,7 @@
 //
 //==========================================================================
 
+#include <avr/pgmspace.h>
 #include <Wire.h>
 
 #include "simple_oled_sh1106.h"
@@ -271,10 +272,10 @@ void SimpleDisplayClass::SetCursor( uint8_t ui8TextLine, uint8_t ui8TextColumn, 
 //
 void SimpleDisplayClass::Print( char* strText )
 {
-	uint8_t		ui8CharIdx			= *strText++;
-	uint16_t	ui16Helper;
-	uint8_t *	pui8ActualColumn;
-	uint8_t		ui8LetterColumn;
+	uint8_t			ui8CharIdx			= *strText++;
+	uint16_t		ui16Helper;
+	const uint8_t *	pui8ActualColumn;
+	uint8_t			ui8LetterColumn;
 
 	while( 0x00 != ui8CharIdx )
 	{
@@ -284,6 +285,15 @@ void SimpleDisplayClass::Print( char* strText )
 		}
 		else if( (' ' <= ui8CharIdx) && (128 > ui8CharIdx) )
 		{
+			//--------------------------------------------------------------
+			//	if we reached the end of the line then depending of the
+			//	PrintMode continue in the 'next line'
+			//
+			if( TEXT_COLUMNS <= m_ui8TextColumn )
+			{
+				NextLine( false );
+			}
+
 			//--------------------------------------------------------------
 			//	this is a printable character, so calculate the pointer
 			//	into the font array to that position where the bitmap of
@@ -302,7 +312,8 @@ void SimpleDisplayClass::Print( char* strText )
 
 			for( uint8_t idx = 0 ; idx < PIXELS_CHAR_WIDTH ; idx++ )
 			{
-				ui8LetterColumn = *pui8ActualColumn++;
+				ui8LetterColumn = pgm_read_byte( pui8ActualColumn );
+				pui8ActualColumn++;
 
 				if( m_bInverse )
 				{
@@ -315,16 +326,9 @@ void SimpleDisplayClass::Print( char* strText )
 			Wire.endTransmission();
 
 			//--------------------------------------------------------------
-			//	one character printed
-			//	if we reached the end of the line then continue in the
-			//	'next line'
+			//	one character printed, so move cursor
 			//
 			m_ui8TextColumn++;
-			
-			if( TEXT_COLUMNS <= m_ui8TextColumn )
-			{
-				NextLine( false );
-			}
 		}
 
 		ui8CharIdx = *strText++;

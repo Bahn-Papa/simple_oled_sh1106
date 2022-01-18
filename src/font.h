@@ -30,7 +30,7 @@
 //	May be that this is different than other fonts where each value will
 //	hold the dots for one row of a character.
 //
-uint8_t font8x8_simple[768] =
+const unsigned char font8x8_simple[768] PROGMEM =
 {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,		//	space
 	0x00, 0x00, 0x06, 0x5F, 0x5F, 0x06, 0x00, 0x00,		//	!
