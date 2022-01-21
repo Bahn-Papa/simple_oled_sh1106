@@ -25,6 +25,7 @@ The class has the following function set:
 | | |
 | Clear() | clears the hole display and sets the cursor to the top left position of the display |
 | ClearLine() | clears just the current line and sets the cursor to the beginning of the line |
+| ClearLine( \<line\> ) | clears the given line and sets the cursor to the beginning of that line |
 | | |
 | Home() | sets the cursor to the top left position of the display |
 | SetCursor( \<line\>, \<column\> ) | sets the cursor to the given \<line\> and \<column\> of the display |
