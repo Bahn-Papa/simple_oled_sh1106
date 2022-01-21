@@ -66,7 +66,11 @@ class SimpleDisplayClass
 
 
 		void Clear( void );
-		void ClearLine( void );
+		void ClearLine( uint8_t ui8LineToClear );
+		inline void ClearLine( void )
+		{
+			ClearLine( m_ui8TextLine );
+		};
 
 		void SetCursor( uint8_t ui8TextLine, uint8_t ui8TextColumn );
 

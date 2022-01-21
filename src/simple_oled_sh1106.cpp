@@ -382,17 +382,24 @@ void SimpleDisplayClass::Clear( void )
 //**************************************************************************
 //	ClearLine
 //--------------------------------------------------------------------------
-//	The function deletes the text line at the actual cursor position and
+//	The function deletes the text line at the given cursor position and
 //	sets the cursor to the bginning of that line.
 //
-void SimpleDisplayClass::ClearLine( void )
+void SimpleDisplayClass::ClearLine( uint8_t ui8LineToClear )
 {
-	uint8_t	ui8LineToClear	= m_ui8TextLine + m_ui8LineOffset;
+	//------------------------------------------------------------------
+	//	at the end of the function the cursor will be positioned to
+	//	the beginning of the line that will be cleared
+	//
+	m_ui8TextLine	= ui8LineToClear;
+	m_ui8TextColumn	= 0;
 
 	//------------------------------------------------------------------
 	//	take care of the display line shift
 	//	and correct the line to clear accordingly
 	//
+	ui8LineToClear += m_ui8LineOffset;
+
 	if( TEXT_LINES <= ui8LineToClear )
 	{
 		ui8LineToClear -= TEXT_LINES;
@@ -429,9 +436,8 @@ void SimpleDisplayClass::ClearLine( void )
 	}
 
 	//------------------------------------------------------------------
-	//	set cursor to first text position of actual line
+	//	set cursor to first text position of this line
 	//
-	m_ui8TextColumn = 0;
 	g_arui8PositionCommandBuffer[ IDX_COLUMN_ADDRESS_LOW  ] =	  OPC_COLUMN_ADDRESS_LOW
 																| g_ui8DisplayColumnOffset;
 
