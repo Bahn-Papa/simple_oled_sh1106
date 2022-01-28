@@ -6,31 +6,36 @@
 # Datatypes (KEYWORD1)
 #################################################
 
-SimpleDisplayClass		KEYWORD1
+SimpleDisplayClass				KEYWORD1
 
 #################################################
 # Methods and Functions (KEYWORD2)
 #################################################
-Init					KEYWORD2
-Print					KEYWORD2
-PrintLn					KEYWORD2
-Clear					KEYWORD2
-ClearLine				KEYWORD2
-SetCursor				KEYWORD2
-Home					KEYWORD2
-SetInverse				KEYWORD2
-SetNormal				KEYWORD2
-Flip					KEYWORD2
-SetInverseFont			KEYWORD2
-SetDisplayColumnOffset	KEYWORD2
+Init							KEYWORD2
+MaxTextLines					KEYWORD2
+MaxTextColumns					KEYWORD2
+Print							KEYWORD2
+PrintLn							KEYWORD2
+Clear							KEYWORD2
+ClearLine						KEYWORD2
+SetCursor						KEYWORD2
+Home							KEYWORD2
+SetInverse						KEYWORD2
+SetNormal						KEYWORD2
+Flip							KEYWORD2
+SetInverseFont					KEYWORD2
+SetPrintModeOverwriteNextLine	KEYWORD2
+SetPrintModeOverwriteSameLine	KEYWORD2
+SetPrintModeScrollLine			KEYWORD2
+SetDisplayColumnOffset			KEYWORD2
 
 #################################################
 # Constants (LITERAL1)
 #################################################
-gc_ui8MaxTextLines		LITERAL1
-gc_ui8MaxTextColumns	LITERAL1
+gc_ui8MaxTextLines				LITERAL1
+gc_ui8MaxTextColumns			LITERAL1
 
 #################################################
 # Variables (LITERAL2)
 #################################################
-g_clDisplay		LITERAL2
+g_clDisplay						LITERAL2
