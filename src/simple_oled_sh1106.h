@@ -14,10 +14,21 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	Version: 1.02	Date: 28.01.2022
+//#
+//#	Implementation:
+//#		-	change void Init( void ) to uint8_t Init( uint8_t address )
+//#			the function will now check, if the given address is valid
+//#			and if a display is connected
+//#			if all is okay then '0' is returned
+//#			otherwise an error code is retruned
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version: 1.01	Date: 21.01.2022
 //#
 //#	Implementation:
-//#		-	Add function ClearLine( uint8_t ui8LineToClear )
+//#		-	Add function ClearLine( uint8_t usLineToClear )
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -40,6 +51,16 @@
 
 //==========================================================================
 //
+//		D E F I N I T I O N S
+//
+//==========================================================================
+
+#define	DISPLAY_ADDRESS					60
+#define SECOND_DISPLAY_ADDRESS			61
+
+
+//==========================================================================
+//
 //		C L A S S   D E F I N I T I O N S
 //
 //==========================================================================
@@ -53,7 +74,7 @@ class SimpleDisplayClass
 	public:
 		SimpleDisplayClass();
 
-		void Init( void );
+		uint8_t Init( uint8_t address = DISPLAY_ADDRESS );
 
 		uint8_t MaxTextLines( void );
 		uint8_t MaxTextColumns( void );
@@ -73,13 +94,13 @@ class SimpleDisplayClass
 
 
 		void Clear( void );
-		void ClearLine( uint8_t ui8LineToClear );
+		void ClearLine( uint8_t usLineToClear );
 		inline void ClearLine( void )
 		{
-			ClearLine( m_ui8TextLine );
+			ClearLine( m_usTextLine );
 		};
 
-		void SetCursor( uint8_t ui8TextLine, uint8_t ui8TextColumn );
+		void SetCursor( uint8_t usTextLine, uint8_t usTextColumn );
 
 		inline void Home( void )
 		{
@@ -98,19 +119,20 @@ class SimpleDisplayClass
 		void SetPrintModeOverwriteNextLine( void );
 		void SetPrintModeScrollLine( void );
 
-		void SetDisplayColumnOffset( uint8_t ui8Offset );
+		void SetDisplayColumnOffset( uint8_t usOffset );
 
 
 	private:
-		uint8_t		m_ui8TextLine;
-		uint8_t		m_ui8TextColumn;
-		uint8_t		m_ui8PrintMode;
-		uint8_t		m_ui8LineOffset;
+		uint8_t		m_usAddress;
+		uint8_t		m_usTextLine;
+		uint8_t		m_usTextColumn;
+		uint8_t		m_usPrintMode;
+		uint8_t		m_usLineOffset;
 		bool		m_bInverse;
 
 		void NextLine( bool bShiftLine );
-		void SendCommand( uint8_t ui8OpCode );
-		void SendCommand( uint8_t ui8OpCode, uint8_t ui8Parameter );
+		void SendCommand( uint8_t usOpCode );
+		void SendCommand( uint8_t usOpCode, uint8_t usParameter );
 		void ShiftDisplayOneLine( void );
 };
 
