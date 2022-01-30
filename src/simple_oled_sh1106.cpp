@@ -18,6 +18,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	Version: 1.03	Date: 30.01.2022
+//#
+//#	Implementation:
+//#		-	add functions to print text that is stored in PROGMEM
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version: 1.02	Date: 28.01.2022
 //#
 //#	Implementation:
@@ -319,67 +326,57 @@ void SimpleDisplayClass::SetCursor( uint8_t usTextLine, uint8_t usTextColumn )
 //	PrintMode the cursor will be set to the beginning of the (next) line
 //	and the text output will continue there.
 //
-void SimpleDisplayClass::Print( char* strText )
+void SimpleDisplayClass::Print( const __FlashStringHelper* cstrText )
 {
-	uint8_t			usCharIdx			= *strText++;
-	uint16_t		uiHelper;
-	const uint8_t *	pusActualColumn;
-	uint8_t			usLetterColumn;
+	PGM_P	pText		= reinterpret_cast<PGM_P>( cstrText );
+	uint8_t	usCharIdx	= pgm_read_byte( pText++ );
 
 	while( 0x00 != usCharIdx )
 	{
-		if( '\n' == usCharIdx )
-		{
-			NextLine( true );
-		}
-		else if( (' ' <= usCharIdx) && (128 > usCharIdx) )
-		{
-			//--------------------------------------------------------------
-			//	if we reached the end of the line then depending of the
-			//	PrintMode continue in the 'next line'
-			//
-			if( TEXT_COLUMNS <= m_usTextColumn )
-			{
-				NextLine( false );
-			}
+		PrintChar( usCharIdx );
 
-			//--------------------------------------------------------------
-			//	this is a printable character, so calculate the pointer
-			//	into the font array to that position where the bitmap of
-			//	this character starts
-			//
-			uiHelper   = usCharIdx - 32;
-			uiHelper <<= 3;	//	mit 8 multiplizieren
+		usCharIdx = pgm_read_byte( pText++ );
+	}
+}
 
-			pusActualColumn = &font8x8_simple[ 0 ] + uiHelper;
 
-			//--------------------------------------------------------------
-			//	transmit the bitmap of the character to the display
-			//
-			Wire.beginTransmission( m_usAddress );
+//**************************************************************************
+//	Print
+//--------------------------------------------------------------------------
+//	This function will print the given text on the display starting at
+//	the actual cursor position and then sets the cursor to the beginning
+//	of the next line.
+//	If the text contains a new line character ('\n') then the output will
+//	continue at the beginning of the next line.
+//	If the text ouput reaches the end of the line then depending of the
+//	PrintMode the cursor will be set to the beginning of the (next) line
+//	and the text output will continue there.
+//
+void SimpleDisplayClass::PrintLn( const __FlashStringHelper* cstrText )
+{
+	Print( cstrText );
+	NextLine( true );
+}
 
-			Wire.write( PREFIX_DATA );
 
-			for( uint8_t idx = 0 ; idx < PIXELS_CHAR_WIDTH ; idx++ )
-			{
-				usLetterColumn = pgm_read_byte( pusActualColumn );
-				pusActualColumn++;
+//**************************************************************************
+//	Print
+//--------------------------------------------------------------------------
+//	This function will print the given text on the display starting at
+//	the actual cursor position.
+//	If the text contains a new line character ('\n') then the output will
+//	continue at the beginning of the next line.
+//	If the text ouput reaches the end of the line then depending of the
+//	PrintMode the cursor will be set to the beginning of the (next) line
+//	and the text output will continue there.
+//
+void SimpleDisplayClass::Print( char* strText )
+{
+	uint8_t	usCharIdx	= *strText++;
 
-				if( m_bInverse )
-				{
-					usLetterColumn = ~usLetterColumn;
-				}
-
-				Wire.write( usLetterColumn );
-			}
-
-			Wire.endTransmission();
-
-			//--------------------------------------------------------------
-			//	one character printed, so move cursor
-			//
-			m_usTextColumn++;
-		}
+	while( 0x00 != usCharIdx )
+	{
+		PrintChar( usCharIdx );
 
 		usCharIdx = *strText++;
 	}
@@ -649,6 +646,78 @@ void SimpleDisplayClass::SendCommand( uint8_t usOpCode, uint8_t usParameter )
 	Wire.write( usParameter );
 
 	Wire.endTransmission();
+}
+
+
+//**************************************************************************
+//	PrintChar
+//--------------------------------------------------------------------------
+//	This function will print the given character on the display starting at
+//	the actual cursor position.
+//	If the text contains a new line character ('\n') then the output will
+//	continue at the beginning of the next line.
+//	If the text ouput reaches the end of the line then depending of the
+//	PrintMode the cursor will be set to the beginning of the (next) line
+//	and the text output will continue there.
+//
+void SimpleDisplayClass::PrintChar( uint8_t usCharIdx )
+{
+	uint16_t		uiHelper;
+	const uint8_t *	pusActualColumn;
+	uint8_t			usLetterColumn;
+
+	if( '\n' == usCharIdx )
+	{
+		NextLine( true );
+	}
+	else if( (' ' <= usCharIdx) && (128 > usCharIdx) )
+	{
+		//--------------------------------------------------------------
+		//	if we reached the end of the line then depending of the
+		//	PrintMode continue in the 'next line'
+		//
+		if( TEXT_COLUMNS <= m_usTextColumn )
+		{
+			NextLine( false );
+		}
+
+		//--------------------------------------------------------------
+		//	this is a printable character, so calculate the pointer
+		//	into the font array to that position where the bitmap of
+		//	this character starts
+		//
+		uiHelper   = usCharIdx - 32;
+		uiHelper <<= 3;	//	mit 8 multiplizieren
+
+		pusActualColumn = &font8x8_simple[ 0 ] + uiHelper;
+
+		//--------------------------------------------------------------
+		//	transmit the bitmap of the character to the display
+		//
+		Wire.beginTransmission( m_usAddress );
+
+		Wire.write( PREFIX_DATA );
+
+		for( uint8_t idx = 0 ; idx < PIXELS_CHAR_WIDTH ; idx++ )
+		{
+			usLetterColumn = pgm_read_byte( pusActualColumn );
+			pusActualColumn++;
+
+			if( m_bInverse )
+			{
+				usLetterColumn = ~usLetterColumn;
+			}
+
+			Wire.write( usLetterColumn );
+		}
+
+		Wire.endTransmission();
+
+		//--------------------------------------------------------------
+		//	one character printed, so move cursor
+		//
+		m_usTextColumn++;
+	}
 }
 
 

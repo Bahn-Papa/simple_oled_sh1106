@@ -14,6 +14,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	Version: 1.03	Date: 30.01.2022
+//#
+//#	Implementation:
+//#		-	add functions to print text that is stored in PROGMEM
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version: 1.02	Date: 28.01.2022
 //#
 //#	Implementation:
@@ -79,6 +86,9 @@ class SimpleDisplayClass
 		uint8_t MaxTextLines( void );
 		uint8_t MaxTextColumns( void );
 
+		void Print(   const __FlashStringHelper* cstrText );
+		void PrintLn( const __FlashStringHelper* cstrText );
+
 		void Print(   char* strText );
 		void PrintLn( char* strText );
 
@@ -131,6 +141,7 @@ class SimpleDisplayClass
 		bool		m_bInverse;
 
 		void NextLine( bool bShiftLine );
+		void PrintChar( uint8_t usCharIdx );
 		void SendCommand( uint8_t usOpCode );
 		void SendCommand( uint8_t usOpCode, uint8_t usParameter );
 		void ShiftDisplayOneLine( void );
