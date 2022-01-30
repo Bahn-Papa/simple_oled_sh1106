@@ -54,7 +54,7 @@ void setup()
 //
 void loop()
 {
-	g_clDisplay.Print( "Print Text Demo" );
+	g_clDisplay.Print( F( "Print Text Demo" ) );
 
 	delay( 2000 );
 
@@ -63,7 +63,7 @@ void loop()
 	//	print text in normal font mode
 	//
 	g_clDisplay.SetCursor( 2, 0 );
-	g_clDisplay.PrintLn( "Normal Text\n" );
+	g_clDisplay.PrintLn( F( "Normal Text\n" ) );
 
 	delay( 1000 );
 
@@ -71,7 +71,7 @@ void loop()
 	//	now print some text in inverse font mode
 	//
 	g_clDisplay.SetInverseFont( true );
-	g_clDisplay.Print( "Inverse Font" );
+	g_clDisplay.Print( F( "Inverse Font" ) );
 
 	delay( 3000 );
 
@@ -79,7 +79,7 @@ void loop()
 	//	some additional text to demonstrate how to clear a line
 	//
 	g_clDisplay.SetCursor( 6, 0 );
-	g_clDisplay.Print( "Clear this Line" );
+	g_clDisplay.Print( F( "Clear this Line" ) );
 	g_clDisplay.SetInverseFont( false );
 
 	delay( 2000 );
@@ -95,7 +95,7 @@ void loop()
 	//	and now clear the hole display
 	//	first some text ...
 	//
-	g_clDisplay.Print( "Clear Display" );
+	g_clDisplay.Print( F( "Clear Display" ) );
 
 	delay( 2000 );
 
@@ -146,7 +146,7 @@ void loop()
 	//	the last example for printing text.
 	//
 	g_clDisplay.SetCursor( 4, 0 );
-	g_clDisplay.Print( "Column" );
+	g_clDisplay.Print( F( "Column" ) );
 	g_clDisplay.SetCursor( 3, 0 );
 	
 	for( uint8_t idx = 0 ; idx < g_clDisplay.MaxTextColumns() ; idx++ )

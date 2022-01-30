@@ -22,6 +22,7 @@
 //==========================================================================
 
 #include <stdint.h>
+#include <avr/pgmspace.h>
 #include <simple_oled_sh1106.h>
 
 
@@ -68,11 +69,11 @@ void loop()
 	g_clDisplay.Clear();
 	g_clDisplay.SetInverseFont( true );
 	g_clDisplay.SetCursor( 1, 0 );
-	g_clDisplay.PrintLn( "               " );
-	g_clDisplay.PrintLn( " ! ATTENTION ! " );
-	g_clDisplay.PrintLn( "               " );
-	g_clDisplay.PrintLn( " Flash display " );
-	g_clDisplay.PrintLn( "               " );
+	g_clDisplay.PrintLn( F( "               " ) );
+	g_clDisplay.PrintLn( F( " ! ATTENTION ! " ) );
+	g_clDisplay.PrintLn( F( "               " ) );
+	g_clDisplay.PrintLn( F( " Flash display " ) );
+	g_clDisplay.PrintLn( F( "               " ) );
 	g_clDisplay.SetInverseFont( false );
 
 	delay( 2000 );
@@ -97,7 +98,7 @@ void loop()
 	g_clDisplay.Clear();
 
 	g_clDisplay.SetCursor( 3, 0 );
-	g_clDisplay.Print( "Now flip display" );
+	g_clDisplay.Print( F( "Now flip display" ) );
 
 	delay( 2000 );
 
@@ -106,21 +107,20 @@ void loop()
 	//
 	g_clDisplay.Flip( true );
 
-	g_clDisplay.PrintLn( "The text now" );
-	g_clDisplay.PrintLn( "is turned by" );
-	g_clDisplay.PrintLn( "180 degree." );
+	g_clDisplay.PrintLn( F( "The text now" ) );
+	g_clDisplay.PrintLn( F( "is turned by" ) );
+	g_clDisplay.PrintLn( F( "180 degree." ) );
 
 	delay( 2000 );
 
-	g_clDisplay.PrintLn( "" );
-	g_clDisplay.Print( "and flip back" );
+	g_clDisplay.Print( F( "\nand flip back" ) );
 
 	delay( 2000 );
 
 	g_clDisplay.Flip( false );
 
-	g_clDisplay.PrintLn( "The text is" );
-	g_clDisplay.PrintLn( "back to normal" );
+	g_clDisplay.PrintLn( F( "The text is" ) );
+	g_clDisplay.PrintLn( F( "back to normal" ) );
 
 	delay( 5000 );
 
