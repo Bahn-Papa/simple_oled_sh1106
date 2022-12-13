@@ -14,6 +14,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	Version: 1.04	Date: 13.12.2022
+//#
+//#	Implementation:
+//#		-	move function PrintChar() to the public section
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version: 1.03	Date: 30.01.2022
 //#
 //#	Implementation:
@@ -86,6 +93,8 @@ class SimpleDisplayClass
 		uint8_t MaxTextLines( void );
 		uint8_t MaxTextColumns( void );
 
+		void PrintChar( uint8_t usCharIdx );
+
 		void Print(   const __FlashStringHelper* cstrText );
 		void PrintLn( const __FlashStringHelper* cstrText );
 
@@ -141,7 +150,6 @@ class SimpleDisplayClass
 		bool		m_bInverse;
 
 		void NextLine( bool bShiftLine );
-		void PrintChar( uint8_t usCharIdx );
 		void SendCommand( uint8_t usOpCode );
 		void SendCommand( uint8_t usOpCode, uint8_t usParameter );
 		void ShiftDisplayOneLine( void );

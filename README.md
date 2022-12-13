@@ -20,6 +20,8 @@ The class has the following function set:
 
 | Function | Description |
 | --- | --- |
+| PrintChar( \<char\> ) | Prints \<char\> at the actual cursor position on the display |
+| | |
 | Print( \<text\> ) | Prints \<text\> starting from the actual cursor position on the display |
 | PrintLn( \<text\> ) | Prints \<text\> starting from the actual cursor position on the display and<br>sets the cursor to the beginning of the next line |
 | | |
